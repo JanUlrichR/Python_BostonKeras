@@ -2,7 +2,7 @@ import tensorflow as tf
 
 import numpy as np
 
-
+from bostonModel import BostonModel
 
 import plotting
 
@@ -29,27 +29,12 @@ def main():
     _ , num_target = y_train.shape
     test_size, _ = x_test.shape
 
-    #Model variables
-    epochs = 4400
-    lr = 0.001
-    bs = 512
-    initW =tf.keras.initializers.GlorotUniform()
-    initB = tf.keras.initializers.Zeros()
-
-    hiddL = 200
+    #Training Parameters
+    epochs = 1000
+    bs = 256
                     
-
-    model = tf.keras.Sequential()
-    model.add(tf.keras.layers.Dense(units = hiddL, input_shape=(num_features,),kernel_initializer = initW, bias_initializer = initB))
-    model.add(tf.keras.layers.Activation("relu"))
-    model.add(tf.keras.layers.Dense(units = num_target, input_shape=(num_features,)))
-    model.summary()
-
-    model.compile(
-        loss = tf.keras.losses.MeanSquaredError(),
-        optimizer = tf.keras.optimizers.Adam(learning_rate =lr),
-        metrics = [r_squared]
-    )
+    model = BostonModel(num_features,num_target)
+    
 
     model.fit(
         x = x_train,
@@ -58,9 +43,13 @@ def main():
         batch_size = bs,
         validation_data = [x_test,y_test]
     )
-
+    
+    #model.loadWeights("models/model.h5")
     score = model.evaluate(x_test,y_test)
     print(score)
+
+    
+
     
 
 
